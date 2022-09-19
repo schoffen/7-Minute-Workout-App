@@ -32,6 +32,20 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbarExercise" />
 
+    <TextView
+        android:id="@+id/tvNextExercise"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/next_exercise"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:textStyle="italic|bold"
+
+        app:layout_constraintBottom_toTopOf="@+id/flProgress"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvTitle"
+        />
 
     <ImageView
         android:id="@+id/ivExerciseImage"
@@ -43,6 +57,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbarExercise"
+        android:contentDescription="@string/exercise_preview"
 
         tools:src="@drawable/buttkick_1"
         tools:visibility="visible" />

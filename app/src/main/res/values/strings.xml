@@ -1,8 +1,10 @@
 <resources>
     <string name="app_name">7MinuteWorkout</string>
     <string name="image">start_image</string>
-    <string name="restText">GET READY FOR</string>
+    <string name="restText">GET READY FOR:</string>
     <string name="exerciseText">EXERCISE NAME</string>
     <string name="start">START</string>
     <string name="timer">10</string>
+    <string name="next_exercise">Next Exercise</string>
+    <string name="exercise_preview">Exercise Preview</string>
 </resources>
