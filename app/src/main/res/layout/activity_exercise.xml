@@ -17,19 +17,21 @@
         />
 
     <TextView
+        android:id="@+id/tvTimerTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/get_ready_for"
+        android:text="@string/restText"
         android:textSize="22sp"
         android:textColor="@color/colorAccent"
         android:textStyle="bold"
+        android:layout_marginBottom="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/flProgressBar"
+        app:layout_constraintBottom_toTopOf="@id/flProgress"
         />
 
     <FrameLayout
-        android:id="@+id/flProgressBar"
+        android:id="@+id/flProgress"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_marginTop="10dp"
@@ -70,5 +72,6 @@
 
         </LinearLayout>
     </FrameLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
