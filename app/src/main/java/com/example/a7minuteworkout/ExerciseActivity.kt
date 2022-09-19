@@ -3,8 +3,10 @@ package com.example.a7minuteworkout
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.provider.ContactsContract
 import android.view.View
 import android.widget.Toast
+import androidx.core.view.marginTop
 import com.example.a7minuteworkout.databinding.ActivityExerciseBinding
 
 class ExerciseActivity : AppCompatActivity() {
@@ -16,6 +18,8 @@ class ExerciseActivity : AppCompatActivity() {
     private var exerciseTimer : CountDownTimer? = null
     private var exerciseProgress : Int = 0
 
+    private var exerciseList : ArrayList<ExerciseModel>? = null
+    private var currentExercisePosition = -1
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,6 +29,8 @@ class ExerciseActivity : AppCompatActivity() {
         setContentView(binding?.root)
 
         setSupportActionBar(binding?.toolbarExercise)
+
+        exerciseList = Constants.defaultExerciseList()
 
         if(supportActionBar != null){
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -37,46 +43,76 @@ class ExerciseActivity : AppCompatActivity() {
     }
 
     private fun setupRestView(){
-        binding?.progressBar?.progress = 100
 
         if(restTimer != null){
             restTimer?.cancel()
             restProgress = 0
         }
 
+        binding?.flProgress?.scaleX = 2f
+        binding?.flProgress?.scaleY = 2f
+        binding?.tvTitle?.textSize = 50f
+
+        binding?.progressBar?.progress = 100
         binding?.progressBar?.max = 10
-        binding?.tvTimerTitle?.text = getString(R.string.restText)
+        binding?.tvTitle?.text = getString(R.string.restText)
+        binding?.ivExerciseImage?.visibility = View.GONE
+
         setRestProgressBar()
     }
 
     private fun setupExerciseView(){
-        binding?.progressBar?.progress = 100
-
         if(exerciseTimer != null){
             exerciseTimer?.cancel()
             exerciseProgress = 0
         }
 
+        binding?.flProgress?.scaleX = 1f
+        binding?.flProgress?.scaleY = 1f
+        binding?.tvTitle?.textSize = 22f
+
+        binding?.progressBar?.progress = 100
         binding?.progressBar?.max = 30
-        binding?.tvTimerTitle?.text = getString(R.string.exerciseText)
+        binding?.tvTitle?.text = exerciseList!![currentExercisePosition].getName()
+        binding?.ivExerciseImage?.visibility = View.VISIBLE
+
         setExerciseProgressBar()
     }
 
     private fun setExerciseProgressBar(){
         binding?.progressBar?.progress = exerciseProgress
+        var currentExerciseImage = 0
 
-        exerciseTimer = object : CountDownTimer(30000, 1000){
+        exerciseTimer = object : CountDownTimer(3000, 1000){
             override fun onTick(millisUntilFinished: Long) {
                 exerciseProgress++
                 binding?.progressBar?.progress = 31 - exerciseProgress
                 binding?.tvTimer?.text = (31 - exerciseProgress).toString()
+
+                // Exercise image animation
+                if(exerciseList!![currentExercisePosition].getImages().size > 1){
+                    binding?.ivExerciseImage?.setImageResource(
+                        exerciseList!![currentExercisePosition].
+                        getImages()[currentExerciseImage])
+
+                    if(currentExerciseImage == 0){
+                        currentExerciseImage++
+                    }else{
+                        currentExerciseImage--
+                    }
+                }else{
+                    binding?.ivExerciseImage?.setImageResource(
+                        exerciseList!![currentExercisePosition].
+                        getImages()[0])
+                }
             }
 
             override fun onFinish() {
-                Toast.makeText(this@ExerciseActivity,
-                    "Rest Start", Toast.LENGTH_SHORT).show()
-
-                setupRestView()
+                if(currentExercisePosition < exerciseList?.size!! - 1){
+                    setupRestView()
+                }else{
+                    //TODO implement complete screen
+                }
             }
         }.start()
     }
@@ -84,7 +120,7 @@ class ExerciseActivity : AppCompatActivity() {
     private fun setRestProgressBar(){
         binding?.progressBar?.progress = restProgress
 
-        restTimer = object : CountDownTimer(10000, 1000){
+        restTimer = object : CountDownTimer(1000, 1000){
             override fun onTick(millisUntilFinished: Long) {
                 restProgress++
                 binding?.progressBar?.progress = 11 - restProgress
@@ -92,9 +128,7 @@ class ExerciseActivity : AppCompatActivity() {
             }
 
             override fun onFinish() {
-                Toast.makeText(this@ExerciseActivity,
-                    "Exercise Start!", Toast.LENGTH_SHORT).show()
-
+                currentExercisePosition++
                 setupExerciseView()
             }
         }.start()
