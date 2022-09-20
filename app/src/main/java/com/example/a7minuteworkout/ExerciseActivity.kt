@@ -1,15 +1,22 @@
 package com.example.a7minuteworkout
 
+import android.media.MediaPlayer
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.provider.ContactsContract
+import android.speech.tts.TextToSpeech
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.core.view.marginTop
 import com.example.a7minuteworkout.databinding.ActivityExerciseBinding
+import java.lang.Exception
+import java.util.*
+import kotlin.collections.ArrayList
 
-class ExerciseActivity : AppCompatActivity() {
+class ExerciseActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
     private var binding : ActivityExerciseBinding? = null
 
     private var restTimer : CountDownTimer? = null
@@ -21,12 +28,17 @@ class ExerciseActivity : AppCompatActivity() {
     private var exerciseList : ArrayList<ExerciseModel>? = null
     private var currentExercisePosition = -1
 
+    private var tts : TextToSpeech? = null
+
+    private var player : MediaPlayer? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = ActivityExerciseBinding.inflate(layoutInflater)
         setContentView(binding?.root)
+
+        tts = TextToSpeech(this, this)
 
         setSupportActionBar(binding?.toolbarExercise)
 
@@ -43,6 +55,15 @@ class ExerciseActivity : AppCompatActivity() {
     }
 
     private fun setupRestView(){
+        try{
+            val soundURI = Uri.parse(
+                "android.resource://com.example.a7minuteworkout/raw/" + R.raw.start)
+            player = MediaPlayer.create(applicationContext, soundURI)
+            player?.isLooping = false
+            player?.start()
+        }catch (e: Exception){
+            e.printStackTrace()
+        }
 
         if(restTimer != null){
             restTimer?.cancel()
@@ -52,11 +73,13 @@ class ExerciseActivity : AppCompatActivity() {
         binding?.tvNextExercise?.visibility = View.VISIBLE
         binding?.tvNextExercise?.text = exerciseList!![currentExercisePosition+1].getName()
 
+
         binding?.progressBar?.progress = 100
         binding?.progressBar?.max = 10
         binding?.tvTitle?.text = getString(R.string.restText)
         binding?.ivExerciseImage?.visibility = View.GONE
 
+        speakOut(binding?.tvTitle?.text.toString())
         setRestProgressBar()
     }
 
@@ -73,6 +96,7 @@ class ExerciseActivity : AppCompatActivity() {
         binding?.tvTitle?.text = exerciseList!![currentExercisePosition].getName()
         binding?.ivExerciseImage?.visibility = View.VISIBLE
 
+        speakOut(binding?.tvTitle?.text.toString())
         setExerciseProgressBar()
     }
 
@@ -131,6 +155,10 @@ class ExerciseActivity : AppCompatActivity() {
         }.start()
     }
 
+    private fun speakOut(text : String){
+        tts?.speak(text, TextToSpeech.QUEUE_FLUSH, null, "")
+    }
+
     override fun onDestroy() {
         super.onDestroy()
 
@@ -144,6 +172,28 @@ class ExerciseActivity : AppCompatActivity() {
             exerciseProgress = 0
         }
 
+        if(tts != null){
+            tts?.stop()
+            tts?.shutdown()
+        }
+
+        if(player != null){
+            player!!.stop()
+        }
+
         binding = null
+    }
+
+    override fun onInit(status: Int) {
+        if(status == TextToSpeech.SUCCESS){
+            val result = tts!!.setLanguage(Locale.US)
+
+            if(result == TextToSpeech.LANG_MISSING_DATA ||
+                result == TextToSpeech.LANG_NOT_SUPPORTED){
+                Log.e("TTS", "Failed Missing Data")
+            }else{
+                Log.e("TTS", "Failed")
+            }
+        }
     }
 }
