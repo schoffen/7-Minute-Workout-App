@@ -18,6 +18,20 @@
         app:titleTextColor="@color/colorPrimary"
         />
 
+    <ImageView
+        android:id="@+id/ivExerciseImage"
+        android:layout_width="wrap_content"
+        android:layout_height="300dp"
+        android:visibility="invisible"
+        app:layout_constraintTop_toBottomOf="@+id/toolbarExercise"
+        app:layout_constraintBottom_toTopOf="@id/tvTitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:contentDescription="@string/exercise_preview"
+
+        tools:src="@drawable/buttkick_1"
+        tools:visibility="visible" />
+
     <TextView
         android:id="@+id/tvTitle"
         android:layout_width="wrap_content"
@@ -26,11 +40,10 @@
         android:textColor="@color/colorAccent"
         android:textSize="22sp"
         android:textStyle="bold"
-        android:layout_marginTop="300dp"
-        app:layout_constraintBottom_toTopOf="@id/flProgress"
+        app:layout_constraintTop_toBottomOf="@+id/ivExerciseImage"
+        app:layout_constraintBottom_toTopOf="@id/tvNextExercise"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbarExercise" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/tvNextExercise"
@@ -40,37 +53,20 @@
         android:textColor="@color/black"
         android:textSize="20sp"
         android:textStyle="italic|bold"
-
-        app:layout_constraintBottom_toTopOf="@+id/flProgress"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvTitle"
-        />
-
-    <ImageView
-        android:id="@+id/ivExerciseImage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:scaleType="fitXY"
-        android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@id/tvTitle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbarExercise"
-        android:contentDescription="@string/exercise_preview"
-
-        tools:src="@drawable/buttkick_1"
-        tools:visibility="visible" />
+        />
 
     <FrameLayout
         android:id="@+id/flProgress"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:background="@drawable/item_circular_color_accent_border"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvTitle">
+        app:layout_constraintTop_toBottomOf="@+id/tvNextExercise"
+        app:layout_constraintBottom_toTopOf="@id/rvExerciseStatus">
 
         <ProgressBar
             android:id="@+id/progressBar"
@@ -103,6 +99,16 @@
 
         </LinearLayout>
     </FrameLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvExerciseStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
