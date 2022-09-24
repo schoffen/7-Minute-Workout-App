@@ -1,21 +1,17 @@
 package com.example.a7minuteworkout
 
+import android.content.Intent
 import android.media.MediaPlayer
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.CountDownTimer
-import android.provider.ContactsContract
 import android.speech.tts.TextToSpeech
 import android.util.Log
 import android.view.View
-import android.widget.Toast
-import androidx.core.view.marginTop
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.a7minuteworkout.databinding.ActivityExerciseBinding
-import java.lang.Exception
 import java.util.*
-import kotlin.collections.ArrayList
 
 class ExerciseActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
     private var binding : ActivityExerciseBinding? = null
@@ -25,6 +21,9 @@ class ExerciseActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
 
     private var exerciseTimer : CountDownTimer? = null
     private var exerciseProgress : Int = 0
+
+    var restTimerDuration : Long = 1
+    var exerciseTimerDuration : Long = 1
 
     private var exerciseList : ArrayList<ExerciseModel>? = null
     private var currentExercisePosition = -1
@@ -67,15 +66,7 @@ class ExerciseActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
     }
 
     private fun setupRestView(){
-        try{
-            val soundURI = Uri.parse(
-                "android.resource://com.example.a7minuteworkout/raw/" + R.raw.start)
-            player = MediaPlayer.create(applicationContext, soundURI)
-            player?.isLooping = false
-            player?.start()
-        }catch (e: Exception){
-            e.printStackTrace()
-        }
+        playFinishSound()
 
         if(restTimer != null){
             restTimer?.cancel()
@@ -90,8 +81,30 @@ class ExerciseActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         binding?.tvTitle?.text = getString(R.string.restText)
         binding?.ivExerciseImage?.visibility = View.INVISIBLE
 
-        speakOut(binding?.tvTitle?.text.toString())
         setRestProgressBar()
+
+        player?.setOnCompletionListener {
+            speakOut(binding?.tvTitle?.text.toString())
+        }
+    }
+
+    private fun setRestProgressBar(){
+        binding?.progressBar?.progress = restProgress
+
+        restTimer = object : CountDownTimer(restTimerDuration * 1000, 1000){
+            override fun onTick(millisUntilFinished: Long) {
+                restProgress++
+                binding?.progressBar?.progress = 11 - restProgress
+                binding?.tvTimer?.text = (11 - restProgress).toString()
+            }
+
+            override fun onFinish() {
+                currentExercisePosition++
+                exerciseList!![currentExercisePosition].setIsSelected(true)
+                exerciseAdapter!!.notifyDataSetChanged()
+                setupExerciseView()
+            }
+        }.start()
     }
 
     private fun setupExerciseView(){
@@ -115,7 +128,7 @@ class ExerciseActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         binding?.progressBar?.progress = exerciseProgress
         var currentExerciseImage = 0
 
-        exerciseTimer = object : CountDownTimer(3000, 1000){
+        exerciseTimer = object : CountDownTimer(exerciseTimerDuration * 1000, 1000){
             override fun onTick(millisUntilFinished: Long) {
                 exerciseProgress++
                 binding?.progressBar?.progress = 31 - exerciseProgress
@@ -146,33 +159,29 @@ class ExerciseActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
                     exerciseAdapter!!.notifyDataSetChanged()
                     setupRestView()
                 }else{
-                    //TODO implement complete screen
+                    playFinishSound()
+                    val intent = Intent(
+                        this@ExerciseActivity, FinishActivity::class.java)
+                    startActivity(intent)
                 }
-            }
-        }.start()
-    }
-
-    private fun setRestProgressBar(){
-        binding?.progressBar?.progress = restProgress
-
-        restTimer = object : CountDownTimer(1000, 1000){
-            override fun onTick(millisUntilFinished: Long) {
-                restProgress++
-                binding?.progressBar?.progress = 11 - restProgress
-                binding?.tvTimer?.text = (11 - restProgress).toString()
-            }
-
-            override fun onFinish() {
-                currentExercisePosition++
-                exerciseList!![currentExercisePosition].setIsSelected(true)
-                exerciseAdapter!!.notifyDataSetChanged()
-                setupExerciseView()
             }
         }.start()
     }
 
     private fun speakOut(text : String){
         tts?.speak(text, TextToSpeech.QUEUE_FLUSH, null, "")
+    }
+
+    private fun playFinishSound(){
+        try{
+            val soundURI = Uri.parse(
+                "android.resource://com.example.a7minuteworkout/raw/" + R.raw.start)
+            player = MediaPlayer.create(applicationContext, soundURI)
+            player?.isLooping = false
+            player?.start()
+        }catch (e: Exception){
+            e.printStackTrace()
+        }
     }
 
     override fun onDestroy() {

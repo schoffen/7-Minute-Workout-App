@@ -7,4 +7,7 @@
     <string name="timer">10</string>
     <string name="next_exercise">Next Exercise</string>
     <string name="exercise_preview">Exercise Preview</string>
+    <string name="congratulations">CONGRATULATIONS</string>
+    <string name="finishText">You have finish the 7 Minutes Workout</string>
+    <string name="buttonFinish">FINISH</string>
 </resources>
