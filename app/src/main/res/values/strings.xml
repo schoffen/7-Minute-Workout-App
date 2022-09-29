@@ -10,4 +10,6 @@
     <string name="congratulations">CONGRATULATIONS</string>
     <string name="finishText">You have finish the 7 Minutes Workout</string>
     <string name="buttonFinish">FINISH</string>
+    <string name="bmiOverweightPlus">Oops! You really need to take care of yourself.</string>
+    <string name="bmiOverweightMinor">You are doing great, keep up!</string>
 </resources>
